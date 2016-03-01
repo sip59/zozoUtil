@@ -6,8 +6,14 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -147,6 +153,53 @@ public final class NetworkUtil {
     }
 
     /**
+     * 获取IP地址
+     * @param context
+     * @return
+     */
+    public static String getIpAddress(Context context) {
+        try {
+            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wi = wm.getConnectionInfo();
+
+            int ipInt = wi.getIpAddress();
+            StringBuilder sb = new StringBuilder();
+            sb.append(ipInt & 0xFF).append(".");
+            sb.append((ipInt >> 8) & 0xFF).append(".");
+            sb.append((ipInt >> 16) & 0xFF).append(".");
+            sb.append((ipInt >> 24) & 0xFF);
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取IP地址
+     * @param context
+     * @return
+     */
+    public static String getIpAddress2(Context context) {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface
+                    .getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf
+                        .getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        return inetAddress.getHostAddress().toString();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            return "0.0.0.0";
+        }
+        return "0.0.0.0";
+    }
+
+    /**
      * 枚举网络状态 NET_NO：没有网络 NET_2G:2g网络 NET_3G：3g网络 NET_4G：4g网络 NET_WIFI：wifi
      * NET_UNKNOWN：未知网络
      */
@@ -155,12 +208,12 @@ public final class NetworkUtil {
     }
 
     /**
-     * 判断当前是否网络连接
+     * 获取当前的网络类型(wifi,2G,3G,4G)
      *
      * @param context
      * @return 状态码
      */
-    public NetState isConnected(Context context) {
+    public static NetState getNetType(Context context) {
         NetState stateCode = NetState.NET_NO;
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -204,5 +257,7 @@ public final class NetworkUtil {
         }
         return stateCode;
     }
+
+    public static
 
 }
