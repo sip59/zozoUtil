@@ -2,6 +2,7 @@ package com.zozo.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Point;
 import android.net.wifi.WifiInfo;
@@ -214,10 +215,27 @@ public final class DeviceUtil {
 
     /**
      * 获取设备运行的最大内存
+     * 单位：GB
      *
      * @return 最大内存
      */
-    public static long getMaxMemory() {
-        return Runtime.getRuntime().maxMemory() / 1024;
+    public static int getMaxMemory() {
+        return (int) (Runtime.getRuntime().maxMemory() / (1024 * 1024));
+    }
+
+    /**
+     * 获取设备的可用内存大小
+     * 单位：GB
+     *
+     * @param context
+     * @return 当前内存大小
+     */
+    public static int getDeviceUsableMemory(Context context) {
+        ActivityManager am = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+        am.getMemoryInfo(mi);
+        // 返回当前系统的可用内存
+        return (int) (mi.availMem / (1024 * 1024));
     }
 }
