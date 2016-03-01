@@ -230,7 +230,7 @@ public final class DeviceUtil {
      * @param context
      * @return 当前内存大小
      */
-    public static int getDeviceUsableMemory(Context context) {
+    public static int getUsableMemory(Context context) {
         ActivityManager am = (ActivityManager) context
                 .getSystemService(Context.ACTIVITY_SERVICE);
         ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
