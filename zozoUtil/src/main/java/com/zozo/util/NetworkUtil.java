@@ -257,7 +257,4 @@ public final class NetworkUtil {
         }
         return stateCode;
     }
-
-    public static
-
 }
